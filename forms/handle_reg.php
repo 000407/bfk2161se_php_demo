@@ -1,6 +1,7 @@
 <?php
 	error_reporting(E_ALL | E_STRICT);
 	include_once("handle_resume_upload.php");
+	include_once("user_entity.php");
 
 	$edu_chosen_opts = [
 		'ol' => 0,
@@ -13,6 +14,7 @@
 
 	$name = $_POST['name'];
 	$nic = $_POST['nic'];
+	$passwd = sha1($_POST['passwd']);
 	$age = $_POST['age'];
 	$gender = $_POST['gender'];
 	$id = md5("$nic $name");
@@ -25,9 +27,21 @@
 
 	handle_resume('resume', $id);
 
-	$db = fopen("db.csv", "a") or die("Unable to open file!");
-	fwrite($db, "$id,$name,$nic,$age,$gender,$education");
-	fclose($db);
+	$user = new UserEntity;
 
-	$success = true;
+	$user->user_id = $id;
+	$user->name = $name;
+	$user->nic = $nic;
+	$user->passwd = $passwd;
+	$user->age = $age;
+	$user->gender = $gender;
+	$user->education = $education;
+
+	if($user->save()) {
+		$success = true;
+	}
+	else {
+		$success = false;
+		$message = "Unknown error occurred while trying to save user data!";
+	}
 ?>

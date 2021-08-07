@@ -15,6 +15,7 @@ class UserEntity
 		$this->props = array(
 			"user_id" => null,
 			"name" => null,
+			"passwd" => null,
 			"nic" => null,
 			"age" => null,
 			"gender" => null,
@@ -38,12 +39,18 @@ class UserEntity
 
 	public function save() {
 		//TODO: Add error handling
-		$sql = "INSERT INTO users(user_id, name, nic, age, gender, education) VALUES(?, ?, ?, ?, ?, ?);";
+		if (isset($this->con->connect_errno) && $this->con->connect_errno) {
+			// TODO: Log the error
+			return false;
+		}
+
+		$sql = "INSERT INTO users(user_id, name, passwd, nic, age, gender, education) VALUES(?, ?, ?, ?, ?, ?, ?);";
 		$stmt = $this->con->prepare($sql);
 
-		$stmt->bind_param('sssiss',
+		$stmt->bind_param('ssssiss',
 			$this->props['user_id'],
 			$this->props['name'],
+			$this->props['passwd'],
 			$this->props['nic'],
 			$this->props['age'],
 			$this->props['gender'],
@@ -52,6 +59,10 @@ class UserEntity
 
 		$stmt->execute();
 
+		if ($stmt->errno) {
+			// TODO: Log the error
+			return false;
+		}
 		return $stmt->affected_rows;
 	}
 

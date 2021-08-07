@@ -14,8 +14,12 @@
 			alert("Successfully saved!");
 		</script>
 	<?php endif ?>
+	<?php if (isset($success) && !$success):?>
+		<h4 style="color: red;"><?= $message ?></h4>
+	<?php endif ?>
 	<form method="post" action="<?=$_SERVER['PHP_SELF']?>" enctype="multipart/form-data">
 		<p>Name: <input type="text" name="name" placeholder="e.g. John Doe" /></p>
+		<p>Password: <input type="password" name="passwd" placeholder="e.g. Pass123@" /></p>
 		<p>NIC: <input type="text" name="nic" placeholder="e.g. 199001004500" /></p>
 		<p>Age: <input type="text" name="age" placeholder="e.g. 24" /></p>
 		<p>Gender: 
