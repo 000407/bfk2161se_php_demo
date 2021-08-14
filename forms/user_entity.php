@@ -13,6 +13,7 @@ class UserEntity
 		$this->con = new mysqli("localhost","root","","BFK2161SE");
 
 		$this->props = array(
+			"id" => null,
 			"user_id" => null,
 			"name" => null,
 			"passwd" => null,
@@ -68,5 +69,43 @@ class UserEntity
 
 	public function viewProps() {
 		return $this->props;
+	}
+
+	public function autheticate() {
+		$sql = "SELECT * FROM users WHERE nic=? AND passwd=? LIMIT 1;";
+		$stmt = $this->con->prepare($sql);
+
+		$stmt->bind_param('ss',
+			$this->props['nic'],
+			$this->props['passwd']
+		);
+
+		$stmt->execute();
+
+		$stmt->bind_result($id, $user_id, $name, $passwd, $nic, $age, $gender, $education);
+
+		$stmt->fetch();
+
+		$this->props = array(
+			"id" => $id,
+			"user_id" => $user_id,
+			"name" => $name,
+			"passwd" => $passwd,
+			"nic" => $nic,
+			"age" => $age,
+			"gender" => $gender,
+			"education" => $education
+		);
+
+		if (isset($this->props["id"]) && $this->props["id"]) {
+			$_SESSION["user"] = array(
+				"id" => $id,
+				"user_id" => $user_id,
+				"name" => $name,
+				"nic" => $nic
+			);
+
+			header("Location: home.php?login=success");
+		}
 	}
 }
